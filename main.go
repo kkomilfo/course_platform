@@ -1,117 +1,42 @@
 package main
 
 import (
+	"awesomeProject/internal/db"
+	"awesomeProject/pkg/controllers"
+	"awesomeProject/pkg/handlers"
+	"awesomeProject/pkg/repositories"
 	"fmt"
-	"gorm.io/driver/postgres"
+	"github.com/joho/godotenv"
 	"gorm.io/gorm"
-	"time"
+	"net/http"
 )
-
-type Administrator struct {
-	gorm.Model
-	Email    string `gorm:"unique;not null"`
-	Password string `gorm:"not null"`
-}
-
-type Teacher struct {
-	gorm.Model
-	Email       string    `gorm:"unique;not null"`
-	Password    string    `gorm:"not null"`
-	FullName    string    `gorm:"not null"`
-	AvatarURL   string    `gorm:"not null"`
-	Description string    `gorm:"not null"`
-	DateOfBirth time.Time `gorm:"not null"`
-	Education   string    `gorm:"not null"`
-}
-
-type Student struct {
-	gorm.Model
-	Email     string `gorm:"unique;not null"`
-	Password  string `gorm:"not null"`
-	AvatarURL string
-	FullName  string   `gorm:"not null"`
-	Courses   []Course `gorm:"many2many:course_enrollments;"`
-}
-
-type Course struct {
-	gorm.Model
-	Title       string    `gorm:"not null"`
-	Description string    `gorm:"not null"`
-	TeacherID   uint      `gorm:"not null"`
-	Teacher     Teacher   `gorm:"not null"`
-	Modules     []Module  `gorm:"foreignKey:CourseID"`
-	Students    []Student `gorm:"many2many:course_enrollments;"`
-}
-
-type SubjectType string
-
-// Declare the valid constants for SubjectType
-const (
-	Lecture SubjectType = "Lecture"
-	Task    SubjectType = "Task"
-)
-
-type Subject struct {
-	gorm.Model
-	Title        string `gorm:"not null"`
-	Description  string
-	Files        []File `gorm:"many2many:subject_files;"`
-	StudentFiles []File `gorm:"many2many:subject_student_files;"`
-	DueDate      time.Time
-	Type         SubjectType
-	ModuleID     uint
-}
-
-type File struct {
-	gorm.Model
-	URL string
-}
-
-type Module struct {
-	gorm.Model
-	Title    string
-	CourseID uint
-	Subjects []Subject `gorm:"foreignKey:ModuleID"`
-}
-
-type Grade struct {
-	gorm.Model
-	StudentID uint
-	SubjectID uint
-	Grade     float32
-}
-
-type Comment struct {
-	gorm.Model
-	UserID    uint   `gorm:"not null"`
-	UserType  string `gorm:"type:varchar(10);not null"` // 'student' or 'teacher'
-	SubjectID uint   `gorm:"not null"`
-	Content   string `gorm:"not null"`
-	Subject   Subject
-}
 
 func main() {
-	dsn := fmt.Sprintf("host=localhost user=postgres password=QazWsx@Edc1234 dbname=course_platform port=5432")
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	err := godotenv.Load() // Load .env variables
 	if err != nil {
-		panic("failed to connect database")
-	}
-	fmt.Printf("Started good")
-
-	err = db.AutoMigrate(
-		&Teacher{},
-		&Administrator{},
-		&Student{},
-		&Course{},
-		&Subject{},
-		&Grade{},
-		&Comment{},
-		&File{},
-		&Module{},
-	)
-	if err != nil {
-		return
+		fmt.Println("Error loading .env file")
 	}
 
-	// Create a product
+	connectDatabase := db.ConnectDatabase()
+
+	authorizationHandler := makeAuthorizationHandler(connectDatabase)
+
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("POST /teacher/login", authorizationHandler.TeacherLogin)
+	mux.HandleFunc("POST /student/login", authorizationHandler.StudentLogin)
+	mux.HandleFunc("POST /administrator/login", authorizationHandler.AdministratorLogin)
+
+	err = http.ListenAndServe(":8080", mux)
+	if err != nil {
+		fmt.Println("Failed to start server")
+		panic(err)
+	}
+	fmt.Println("Server is running on port 8080")
+}
+
+func makeAuthorizationHandler(db *gorm.DB) *handlers.AuthorizationHandler {
+	repository := repositories.NewAuthorizationRepository(db)
+	controller := controllers.NewAuthorizationController(repository)
+	return handlers.NewAuthorizationHandler(controller)
 }
