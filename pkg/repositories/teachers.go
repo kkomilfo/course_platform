@@ -19,6 +19,6 @@ func (r *TeacherRepository) Create(teacher *models.Teacher) error {
 
 func (r *TeacherRepository) FindAll() ([]models.Teacher, error) {
 	var teachers []models.Teacher
-	err := r.db.Find(&teachers).Error
+	err := r.db.Preload("Courses").Find(&teachers).Error
 	return teachers, err
 }

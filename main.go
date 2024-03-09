@@ -32,8 +32,13 @@ func main() {
 	mux.HandleFunc("POST /students", authorizationHandler.AuthMiddleware(studentHandler.CreateStudent))
 
 	teacherHandler := makeTeacherHandler(connectDatabase)
+
 	mux.HandleFunc("GET /teachers", authorizationHandler.AuthMiddleware(teacherHandler.GetAllTeachers))
 	mux.HandleFunc("POST /teachers", authorizationHandler.AuthMiddleware(teacherHandler.CreateTeacher))
+
+	courseHandler := makeCourseHandler(connectDatabase)
+
+	mux.HandleFunc("POST /courses", authorizationHandler.AuthMiddleware(courseHandler.CreateCourse))
 
 	err = http.ListenAndServe(":8080", mux)
 	if err != nil {
@@ -59,4 +64,10 @@ func makeTeacherHandler(db *gorm.DB) *handlers.TeacherHandler {
 	repository := repositories.NewTeacherRepository(db)
 	controller := controllers.NewTeacherController(repository)
 	return handlers.NewTeacherHandler(controller)
+}
+
+func makeCourseHandler(db *gorm.DB) *handlers.CourseHandler {
+	repository := repositories.NewCourseRepository(db)
+	controller := controllers.NewCourseController(repository)
+	return handlers.NewCourseHandler(controller)
 }
