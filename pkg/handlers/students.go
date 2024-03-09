@@ -16,6 +16,11 @@ func NewStudentsHandler(studentController *controllers.StudentController) *Stude
 }
 
 func (h *StudentsHandler) CreateStudent(w http.ResponseWriter, r *http.Request) {
+	requestContext := r.Context().Value(RequestContextKey).(RequestContext)
+	if requestContext.Role != models.AdministratorRole {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 	var student models.Student
 	err := json.NewDecoder(r.Body).Decode(&student)
 	if err != nil {
