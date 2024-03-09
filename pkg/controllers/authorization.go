@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"awesomeProject/pkg/models"
 	"awesomeProject/pkg/repositories"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
@@ -33,7 +34,7 @@ func (c *AuthorizationController) LoginAsTeacher(credentials Credentials) (strin
 	if credentials.Password != teacher.Password {
 		return "", ErrInvalidCredentials
 	}
-	tokenString, err := c.generateToken(teacher.ID)
+	tokenString, err := c.generateToken(teacher.ID, models.TeacherRole)
 	if err != nil {
 		return "", ErrInternal
 	}
@@ -48,7 +49,7 @@ func (c *AuthorizationController) LoginAsAdministrator(credentials Credentials) 
 	if credentials.Password != admin.Password {
 		return "", ErrInvalidCredentials
 	}
-	tokenString, err := c.generateToken(admin.ID)
+	tokenString, err := c.generateToken(admin.ID, models.AdministratorRole)
 	if err != nil {
 		return "", ErrInternal
 	}
@@ -63,17 +64,18 @@ func (c *AuthorizationController) LoginAsStudent(credentials Credentials) (strin
 	if credentials.Password != student.Password {
 		return "", ErrInvalidCredentials
 	}
-	tokenString, err := c.generateToken(student.ID)
+	tokenString, err := c.generateToken(student.ID, models.StudentRole)
 	if err != nil {
 		return "", ErrInternal
 	}
 	return tokenString, nil
 }
 
-func (c *AuthorizationController) generateToken(id uint) (string, error) {
+func (c *AuthorizationController) generateToken(id uint, role models.Role) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": id,
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),
+		"role":    role,
 	})
 
 	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))

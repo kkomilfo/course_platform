@@ -29,6 +29,7 @@ func ConnectDatabase() *gorm.DB {
 		&models.Comment{},
 		&models.File{},
 		&models.Module{},
+		&models.Administrator{},
 	)
 	if err != nil {
 		panic("Failed to migrate database")

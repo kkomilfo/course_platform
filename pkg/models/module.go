@@ -1,10 +1,8 @@
 package models
 
-import "gorm.io/gorm"
-
 type Module struct {
-	gorm.Model
-	Title    string
-	CourseID uint
-	Subjects []Subject `gorm:"foreignKey:ModuleID"`
+	ID       uint      `gorm:"primarykey" json:"id"`
+	Title    string    `gorm:"not null" json:"title"`
+	CourseID uint      `gorm:"not null" json:"course_id"`
+	Subjects []Subject `gorm:"foreignKey:ModuleID" json:"subjects"`
 }

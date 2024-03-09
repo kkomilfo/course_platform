@@ -18,14 +18,18 @@ func main() {
 	}
 
 	connectDatabase := db.ConnectDatabase()
+	mux := http.NewServeMux()
 
 	authorizationHandler := makeAuthorizationHandler(connectDatabase)
-
-	mux := http.NewServeMux()
 
 	mux.HandleFunc("POST /teacher/login", authorizationHandler.TeacherLogin)
 	mux.HandleFunc("POST /student/login", authorizationHandler.StudentLogin)
 	mux.HandleFunc("POST /administrator/login", authorizationHandler.AdministratorLogin)
+
+	studentHandler := makeStudentHandler(connectDatabase)
+
+	mux.HandleFunc("GET /students", authorizationHandler.AuthMiddleware(studentHandler.GetAllStudents))
+	mux.HandleFunc("POST /students", authorizationHandler.AuthMiddleware(studentHandler.CreateStudent))
 
 	err = http.ListenAndServe(":8080", mux)
 	if err != nil {
@@ -39,4 +43,10 @@ func makeAuthorizationHandler(db *gorm.DB) *handlers.AuthorizationHandler {
 	repository := repositories.NewAuthorizationRepository(db)
 	controller := controllers.NewAuthorizationController(repository)
 	return handlers.NewAuthorizationHandler(controller)
+}
+
+func makeStudentHandler(db *gorm.DB) *handlers.StudentsHandler {
+	repository := repositories.NewStudentRepository(db)
+	controller := controllers.NewStudentController(repository)
+	return handlers.NewStudentsHandler(controller)
 }

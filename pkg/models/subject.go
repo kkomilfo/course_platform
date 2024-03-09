@@ -1,7 +1,6 @@
 package models
 
 import (
-	"gorm.io/gorm"
 	"time"
 )
 
@@ -13,17 +12,17 @@ const (
 )
 
 type Subject struct {
-	gorm.Model
-	Title        string `gorm:"not null"`
-	Description  string
-	Files        []File `gorm:"many2many:subject_files;"`
-	StudentFiles []File `gorm:"many2many:subject_student_files;"`
-	DueDate      time.Time
-	Type         SubjectType
-	ModuleID     uint
+	ID           uint        `gorm:"primarykey" json:"id"`
+	Title        string      `gorm:"not null" json:"title"`
+	Description  string      ` json:"description"`
+	Files        []File      `gorm:"many2many:subject_files;" json:"files"`
+	StudentFiles []File      `gorm:"many2many:subject_student_files;" json:"student_files"`
+	DueDate      time.Time   `json:"due_date"`
+	Type         SubjectType `json:"type"`
+	ModuleID     uint        `json:"module_id"`
 }
 
 type File struct {
-	gorm.Model
-	URL string
+	ID  uint   `gorm:"primarykey" json:"id"`
+	URL string `gorm:"not null" json:"url"`
 }
