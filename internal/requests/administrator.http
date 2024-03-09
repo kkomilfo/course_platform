@@ -1,0 +1,60 @@
+### Login as administrator and receive token
+POST {{host}}/administrator/login
+Content-Type: application/json
+
+{
+  "email": "admin@course_platform.com",
+  "password": "admin"
+}
+
+> {%
+    client.global.set("auth_token", response.body.token);
+%}
+
+### Create a new student with admin token
+POST {{host}}/students
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "email": "{{$random.email}}@course_platform.com",
+  "password": "123456",
+  "avatar_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+  "full_name": "Ivan Petrechenko"
+}
+
+
+### Get all students with admin token
+GET {{host}}/students
+Authorization: Bearer {{auth_token}}
+
+### Create a new teacher with admin token
+POST {{host}}/teachers
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "email": "{{$random.email}}",
+  "password": "123456",
+  "avatar_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+  "full_name": "Ivan Ivanenko",
+  "description": "Ivan Ivanenko is a professional teacher with 10 years of experience in teaching computer science",
+  "date_of_birth": "{{$isoTimestamp}}",
+  "education": "Ivan Ivanenko has a master's degree in computer science from the University of California, Berkeley"
+}
+
+### Get all teachers with admin token
+GET {{host}}/teachers
+Authorization: Bearer {{auth_token}}
+
+### Create a new course with admin token
+POST {{host}}/courses
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "title": "Introduction to Computer Science",
+  "description": "This course is designed to help students with no prior experience in computer science to learn the basics of programming and computer science",
+  "image_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+  "teacher_id": 5
+}
