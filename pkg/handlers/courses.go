@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 type CourseHandler struct {
@@ -78,4 +79,28 @@ func (h *CourseHandler) GetAllCoursesByTeacherID(w http.ResponseWriter, r *http.
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+}
+
+func (h *CourseHandler) AddModuleToCourse(w http.ResponseWriter, r *http.Request) {
+	requestContext := r.Context().Value(RequestContextKey).(RequestContext)
+	if requestContext.Role != models.TeacherRole {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	courseIDString := r.PathValue("id")
+	courseID, _ := strconv.ParseUint(courseIDString, 10, 64)
+
+	var moduleRequest controllers.ModuleRequest
+	err := json.NewDecoder(r.Body).Decode(&moduleRequest)
+	if err != nil {
+		http.Error(w, "Error decoding module request", http.StatusBadRequest)
+		return
+	}
+	err = h.controller.AddModuleToCourse(uint(courseID), &moduleRequest)
+	if err != nil {
+		http.Error(w, "Error adding module to course", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
 }

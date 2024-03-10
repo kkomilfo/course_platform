@@ -28,3 +28,11 @@ func (r *CourseRepository) EnrollStudent(studentID uint, courseID uint) error {
 	course := models.Course{ID: courseID}
 	return r.db.Model(&student).Association("Courses").Append(&course)
 }
+
+func (r *CourseRepository) AddModuleToCourse(courseID uint, module *models.Module) error {
+	course := models.Course{ID: courseID}
+	return r.db.
+		Model(&course).
+		Association("Modules").
+		Append(module)
+}

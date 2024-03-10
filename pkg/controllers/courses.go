@@ -10,6 +10,10 @@ type EnrollStudentRequest struct {
 	CourseID  uint `json:"course_id"`
 }
 
+type ModuleRequest struct {
+	Title string `json:"title"`
+}
+
 type CourseController struct {
 	repository *repositories.CourseRepository
 }
@@ -36,6 +40,11 @@ func (c *CourseController) GetAllCoursesByTeacherID(teacherID uint) ([]CourseRes
 		courseResponses = append(courseResponses, CourseResponseFromModel(course))
 	}
 	return courseResponses, nil
+}
+
+func (c *CourseController) AddModuleToCourse(courseID uint, module *ModuleRequest) error {
+	model := models.Module{Title: module.Title}
+	return c.repository.AddModuleToCourse(courseID, &model)
 }
 
 type CourseResponse struct {

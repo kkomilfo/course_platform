@@ -26,3 +26,11 @@ GET {{host}}/courses/teacher
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
+### Add Module to course
+POST {{host}}/courses/9/module
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "title": "Module 2"
+}
