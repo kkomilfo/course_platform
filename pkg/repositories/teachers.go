@@ -22,3 +22,10 @@ func (r *TeacherRepository) FindAll() ([]models.Teacher, error) {
 	err := r.db.Preload("Courses").Find(&teachers).Error
 	return teachers, err
 }
+
+func (r *TeacherRepository) GradeStudentWork(studentWorkID uint, grade int) error {
+	return r.db.
+		Model(&models.StudentWork{ID: studentWorkID}).
+		Update("grade", grade).
+		Error
+}

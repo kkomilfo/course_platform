@@ -53,3 +53,23 @@ func (h *TeacherHandler) GetAllTeachers(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 }
+
+func (h *TeacherHandler) GradeStudentWork(w http.ResponseWriter, r *http.Request) {
+	requestContext := r.Context().Value(RequestContextKey).(RequestContext)
+	if requestContext.Role != models.TeacherRole {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	var gradeRequest controllers.GradeRequest
+	err := json.NewDecoder(r.Body).Decode(&gradeRequest)
+	if err != nil {
+		http.Error(w, "Error decoding grade request", http.StatusBadRequest)
+		return
+	}
+	err = h.teacherController.GradeStudentWork(&gradeRequest)
+	if err != nil {
+		http.Error(w, "Error grading student work", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+}

@@ -36,6 +36,7 @@ func main() {
 
 	mux.HandleFunc("GET /teachers", authorizationHandler.AuthMiddleware(teacherHandler.GetAllTeachers))
 	mux.HandleFunc("POST /teachers", authorizationHandler.AuthMiddleware(teacherHandler.CreateTeacher))
+	mux.HandleFunc("POST /teachers/grade", authorizationHandler.AuthMiddleware(teacherHandler.GradeStudentWork))
 
 	courseHandler := makeCourseHandler(connectDatabase)
 

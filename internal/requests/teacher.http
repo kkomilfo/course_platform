@@ -78,3 +78,13 @@ Authorization: Bearer {{auth_token}}
 GET {{host}}/courses/subject/5/student/1
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
+
+### Grade student work
+POST {{host}}/teachers/grade
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "student_work_id": 10,
+  "grade": 10
+}

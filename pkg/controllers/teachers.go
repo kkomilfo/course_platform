@@ -20,3 +20,12 @@ func (c *TeacherController) CreateTeacher(teacher *models.Teacher) error {
 func (c *TeacherController) GetAllTeachers() ([]models.Teacher, error) {
 	return c.teacherRepository.FindAll()
 }
+
+type GradeRequest struct {
+	StudentWorkID uint `json:"student_work_id"`
+	Grade         int  `json:"grade"`
+}
+
+func (c *TeacherController) GradeStudentWork(request *GradeRequest) error {
+	return c.teacherRepository.GradeStudentWork(request.StudentWorkID, request.Grade)
+}
