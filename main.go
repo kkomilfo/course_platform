@@ -39,6 +39,8 @@ func main() {
 	courseHandler := makeCourseHandler(connectDatabase)
 
 	mux.HandleFunc("POST /courses", authorizationHandler.AuthMiddleware(courseHandler.CreateCourse))
+	mux.HandleFunc("POST /courses/enroll", authorizationHandler.AuthMiddleware(courseHandler.EnrollStudent))
+	mux.HandleFunc("GET /courses/teacher", authorizationHandler.AuthMiddleware(courseHandler.GetAllCoursesByTeacherID))
 
 	err = http.ListenAndServe(":8080", mux)
 	if err != nil {
