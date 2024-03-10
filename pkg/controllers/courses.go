@@ -3,6 +3,7 @@ package controllers
 import (
 	"awesomeProject/pkg/models"
 	"awesomeProject/pkg/repositories"
+	"time"
 )
 
 type EnrollStudentRequest struct {
@@ -12,6 +13,19 @@ type EnrollStudentRequest struct {
 
 type ModuleRequest struct {
 	Title string `json:"title"`
+}
+
+type SubjectRequest struct {
+	Title       string               `json:"title"`
+	Description string               `json:"description"`
+	DueDate     time.Time            `json:"due_date"`
+	Type        string               `json:"type"`
+	Files       []SubjectFileRequest `json:"files"`
+}
+
+type SubjectFileRequest struct {
+	URL  string `json:"url"`
+	Name string `json:"name"`
 }
 
 type CourseController struct {
@@ -45,6 +59,21 @@ func (c *CourseController) GetAllCoursesByTeacherID(teacherID uint) ([]CourseRes
 func (c *CourseController) AddModuleToCourse(courseID uint, module *ModuleRequest) error {
 	model := models.Module{Title: module.Title}
 	return c.repository.AddModuleToCourse(courseID, &model)
+}
+
+func (c *CourseController) AddSubjectToModule(moduleID uint, subject *SubjectRequest) error {
+	files := make([]models.File, 0)
+	for _, file := range subject.Files {
+		files = append(files, models.File{URL: file.URL, Name: file.Name})
+	}
+	model := models.Subject{
+		Title:       subject.Title,
+		Description: subject.Description,
+		DueDate:     subject.DueDate,
+		Type:        models.SubjectType(subject.Type),
+		Files:       files,
+	}
+	return c.repository.AddSubjectToModule(moduleID, &model)
 }
 
 type CourseResponse struct {

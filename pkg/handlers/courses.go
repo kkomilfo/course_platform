@@ -104,3 +104,27 @@ func (h *CourseHandler) AddModuleToCourse(w http.ResponseWriter, r *http.Request
 	}
 	w.WriteHeader(http.StatusCreated)
 }
+
+func (h *CourseHandler) AddSubjectToModule(w http.ResponseWriter, r *http.Request) {
+	requestContext := r.Context().Value(RequestContextKey).(RequestContext)
+	if requestContext.Role != models.TeacherRole {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	moduleIDString := r.PathValue("id")
+	moduleID, _ := strconv.ParseUint(moduleIDString, 10, 64)
+
+	var subjectRequest controllers.SubjectRequest
+	err := json.NewDecoder(r.Body).Decode(&subjectRequest)
+	if err != nil {
+		http.Error(w, "Error decoding subject request", http.StatusBadRequest)
+		return
+	}
+	err = h.controller.AddSubjectToModule(uint(moduleID), &subjectRequest)
+	if err != nil {
+		http.Error(w, "Error adding subject to module", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+}

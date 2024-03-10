@@ -36,3 +36,25 @@ func (r *CourseRepository) AddModuleToCourse(courseID uint, module *models.Modul
 		Association("Modules").
 		Append(module)
 }
+
+func (r *CourseRepository) AddSubjectToModule(moduleID uint, subject *models.Subject) error {
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		err := tx.
+			Model(&models.Module{ID: moduleID}).
+			Association("Subjects").
+			Append(subject)
+
+		if err != nil {
+			return err
+		}
+
+		for i := range subject.Files {
+			subject.Files[i].SubjectID = subject.ID // Assign SubjectID
+			if err := tx.Create(&subject.Files[i]).Error; err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+}

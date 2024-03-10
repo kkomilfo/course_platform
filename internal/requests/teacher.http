@@ -34,3 +34,37 @@ Authorization: Bearer {{auth_token}}
 {
   "title": "Module 2"
 }
+
+### Add Lecture lesson to module without files
+POST {{host}}/courses/module/1/subject
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "title": "Lesson {{$random.alphanumeric(5)}}",
+  "description": "Lesson {{$random.alphanumeric(5)}} description",
+  "type": "Lecture",
+  "due_date": "{{$isoTimestamp}}"
+}
+
+### Add Task Lesson to module with files
+POST {{host}}/courses/module/1/subject
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "title": "Lesson {{$random.alphanumeric(5)}}",
+  "description": "Lesson {{$random.alphanumeric(10)}} description",
+  "type": "Task",
+  "due_date": "{{$isoTimestamp}}",
+  "files": [
+    {
+      "name": "file1",
+      "url": "http://file1.com"
+    },
+    {
+      "name": "file2",
+      "url": "http://file2.com"
+    }
+  ]
+}
