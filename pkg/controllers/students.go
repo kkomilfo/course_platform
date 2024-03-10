@@ -9,6 +9,14 @@ type StudentController struct {
 	studentRepository *repositories.StudentRepository
 }
 
+type StudentWorkRequest struct {
+	SubjectID uint `json:"subject_id"`
+	Files     []struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"files"`
+}
+
 func NewStudentController(studentRepository *repositories.StudentRepository) *StudentController {
 	return &StudentController{studentRepository}
 }
@@ -19,4 +27,21 @@ func (c *StudentController) CreateStudent(student *models.Student) error {
 
 func (c *StudentController) GetAllStudents() ([]models.Student, error) {
 	return c.studentRepository.FindAll()
+}
+
+func (c *StudentController) CreateStudentWork(studentID uint, request StudentWorkRequest) error {
+	studentWorkFiles := make([]models.StudentWorkFile, len(request.Files))
+	for i, file := range request.Files {
+		studentWorkFiles[i] = models.StudentWorkFile{
+			Name: file.Name,
+			URL:  file.URL,
+		}
+
+	}
+	work := models.StudentWork{
+		SubjectID: request.SubjectID,
+		StudentID: studentID,
+		Files:     studentWorkFiles,
+	}
+	return c.studentRepository.CreateStudentWork(&work)
 }

@@ -4,6 +4,7 @@ import (
 	"awesomeProject/pkg/controllers"
 	"awesomeProject/pkg/models"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -52,4 +53,28 @@ func (h *StudentsHandler) GetAllStudents(w http.ResponseWriter, r *http.Request)
 		http.Error(w, "Error encoding students", http.StatusInternalServerError)
 		return
 	}
+}
+
+func (h *StudentsHandler) CreateStudentWork(w http.ResponseWriter, r *http.Request) {
+	requestContext := r.Context().Value(RequestContextKey).(RequestContext)
+	if requestContext.Role != models.StudentRole {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	var studentWorkRequest controllers.StudentWorkRequest
+	err := json.NewDecoder(r.Body).Decode(&studentWorkRequest)
+	if err != nil {
+		http.Error(w, "Error decoding student work creation request", http.StatusBadRequest)
+		return
+
+	}
+
+	fmt.Println(studentWorkRequest)
+	err = h.studentController.CreateStudentWork(requestContext.UserID, studentWorkRequest)
+	if err != nil {
+		http.Error(w, "Error creating student work", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
 }

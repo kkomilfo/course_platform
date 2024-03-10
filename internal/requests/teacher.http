@@ -3,8 +3,8 @@ POST {{host}}/teacher/login
 Content-Type: application/json
 
 {
-  "email": "pavlo_general@course_platform.com",
-  "password": "123456"
+  "email": "P1e7xs6onfrX9G@EkiBmnu.de",
+  "password": ""
 }
 
 > {%
@@ -17,8 +17,8 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "course_id": 9,
-  "student_id": 4
+  "course_id": 1,
+  "student_id": 7
 }
 
 ### Get all courses by teacher id
@@ -27,7 +27,7 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 ### Add Module to course
-POST {{host}}/courses/9/module
+POST {{host}}/courses/1/module
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
@@ -36,7 +36,7 @@ Authorization: Bearer {{auth_token}}
 }
 
 ### Add Lecture lesson to module without files
-POST {{host}}/courses/module/1/subject
+POST {{host}}/courses/module/2/subject
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
@@ -48,7 +48,7 @@ Authorization: Bearer {{auth_token}}
 }
 
 ### Add Task Lesson to module with files
-POST {{host}}/courses/module/1/subject
+POST {{host}}/courses/module/2/subject
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
@@ -70,6 +70,11 @@ Authorization: Bearer {{auth_token}}
 }
 
 ### Get details of course by id
-GET {{host}}/courses/9
+GET {{host}}/courses/1
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+### Get student work
+GET {{host}}/courses/subject/5/student/1
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}

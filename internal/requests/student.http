@@ -3,8 +3,8 @@ POST {{host}}/student/login
 Content-Type: application/json
 
 {
-  "email": "ivan_petrechenko+1@course_platform.com",
-  "password": "123456"
+  "email": "2uYjG4I@kcpOQG.de@course_platform.com",
+  "password": "YQiHB8C"
 }
 
 > {%
@@ -13,4 +13,32 @@ Content-Type: application/json
 
 ### Get all courses
 GET {{host}}/courses/student
+Authorization: Bearer {{auth_token}}
+
+### Get subject by id and for student
+GET {{host}}/courses/subject/7/student/1
+Authorization: Bearer {{auth_token}}
+
+### Upload work
+POST {{host}}/students/work
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "subject_id": 5,
+  "files": [
+    {
+      "name": "file",
+      "url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+    },
+    {
+      "name": "file1",
+      "url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+    }
+  ]
+}
+
+### Get student work
+GET {{host}}/courses/subject/5/student/7
+Content-Type: application/json
 Authorization: Bearer {{auth_token}}

@@ -73,3 +73,23 @@ func (r *CourseRepository) FindAllByStudentID(id uint) ([]models.Course, error) 
 		Error
 	return courses, err
 }
+
+func (r *CourseRepository) FindSubject(subjectID uint) (models.Subject, error) {
+	var subject models.Subject
+	err := r.db.
+		Preload("Files").
+		First(&subject, subjectID).
+		Error
+	return subject, err
+}
+
+func (r *CourseRepository) FindStudentWork(subjectID uint, studentID uint) (models.StudentWork, error) {
+	var work models.StudentWork
+	err := r.db.
+		Preload("Files").
+		Preload("Comments").
+		Where("subject_id = ? AND student_id = ?", subjectID, studentID).
+		Find(&work).
+		Error
+	return work, err
+}

@@ -18,9 +18,9 @@ Content-Type: application/json
 
 {
   "email": "{{$random.email}}@course_platform.com",
-  "password": "123456",
+  "password": "{{$random.alphanumeric(7)}}",
   "avatar_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
-  "full_name": "Ivan Petrechenko"
+  "full_name": "{{$random.alphanumeric(7)}} {{$random.alphanumeric(10)}}"
 }
 
 
@@ -56,5 +56,5 @@ Content-Type: application/json
   "title": "Introduction to Computer Science",
   "description": "This course is designed to help students with no prior experience in computer science to learn the basics of programming and computer science",
   "image_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
-  "teacher_id": 5
+  "teacher_id": 1
 }

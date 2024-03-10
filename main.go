@@ -30,6 +30,7 @@ func main() {
 
 	mux.HandleFunc("GET /students", authorizationHandler.AuthMiddleware(studentHandler.GetAllStudents))
 	mux.HandleFunc("POST /students", authorizationHandler.AuthMiddleware(studentHandler.CreateStudent))
+	mux.HandleFunc("POST /students/work", authorizationHandler.AuthMiddleware(studentHandler.CreateStudentWork))
 
 	teacherHandler := makeTeacherHandler(connectDatabase)
 
@@ -45,6 +46,7 @@ func main() {
 	mux.HandleFunc("GET /courses/teacher", authorizationHandler.AuthMiddleware(courseHandler.GetAllCoursesByTeacherID))
 	mux.HandleFunc("GET /courses/student", authorizationHandler.AuthMiddleware(courseHandler.GetAllCoursesByStudentID))
 	mux.HandleFunc("GET /courses/{id}", authorizationHandler.AuthMiddleware(courseHandler.GetCourseByID))
+	mux.HandleFunc("GET /courses/subject/{subjectID}/student/{studentID}", authorizationHandler.AuthMiddleware(courseHandler.GetSubjectTaskForStudent))
 
 	err = http.ListenAndServe(":8080", mux)
 	if err != nil {

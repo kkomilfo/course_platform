@@ -208,3 +208,66 @@ func CourseResponseFromModel(course models.Course) CourseResponse {
 		Students:    students,
 	}
 }
+
+func (c *CourseController) GetSubjectTaskForStudent(subjectID uint, studentID uint) (SubjectTaskResponse, error) {
+	subject, err := c.repository.FindSubject(subjectID)
+	if err != nil {
+		return SubjectTaskResponse{}, err
+	}
+	work, err := c.repository.FindStudentWork(subjectID, studentID)
+	if err != nil {
+		return SubjectTaskResponse{}, err
+	}
+	return SubjectTaskResponseFromModel(subject, work), nil
+}
+
+type SubjectTaskResponse struct {
+	ID           uint                         `json:"id"`
+	Title        string                       `json:"title"`
+	Description  string                       `json:"description"`
+	DueDate      string                       `json:"due_date"`
+	Comments     []SubjectTaskCommentResponse `json:"comments"`
+	TaskFiles    []SubjectFileResponse        `json:"task_files"`
+	StudentFiles []SubjectFileResponse        `json:"student_files"`
+	Grade        *uint                        `json:"grade"`
+}
+
+type SubjectTaskCommentResponse struct {
+	ID       uint   `json:"id"`
+	Content  string `json:"content"`
+	UserType string `json:"user_type"`
+}
+
+func SubjectTaskResponseFromModel(subject models.Subject, work models.StudentWork) SubjectTaskResponse {
+	var files []SubjectFileResponse
+	for _, file := range subject.Files {
+		files = append(files, SubjectFileResponse{
+			URL:  file.URL,
+			Name: file.Name,
+		})
+	}
+	var comments []SubjectTaskCommentResponse
+	for _, comment := range work.Comments {
+		comments = append(comments, SubjectTaskCommentResponse{
+			ID:       comment.ID,
+			Content:  comment.Content,
+			UserType: comment.UserType,
+		})
+	}
+	var studentFiles []SubjectFileResponse
+	for _, file := range work.Files {
+		studentFiles = append(studentFiles, SubjectFileResponse{
+			URL:  file.URL,
+			Name: file.Name,
+		})
+	}
+	return SubjectTaskResponse{
+		ID:           subject.ID,
+		Title:        subject.Title,
+		Description:  subject.Description,
+		DueDate:      subject.DueDate.Format(time.RFC3339),
+		Comments:     comments,
+		TaskFiles:    files,
+		StudentFiles: studentFiles,
+	}
+}

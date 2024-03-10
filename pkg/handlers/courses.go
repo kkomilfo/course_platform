@@ -166,3 +166,24 @@ func (h *CourseHandler) GetAllCoursesByStudentID(w http.ResponseWriter, r *http.
 	}
 	w.WriteHeader(http.StatusOK)
 }
+
+func (h *CourseHandler) GetSubjectTaskForStudent(w http.ResponseWriter, r *http.Request) {
+	subjectIDString := r.PathValue("subjectID")
+	subjectID, _ := strconv.ParseUint(subjectIDString, 10, 64)
+
+	studentIDString := r.PathValue("studentID")
+	studentID, _ := strconv.ParseUint(studentIDString, 10, 64)
+
+	tasks, err := h.controller.GetSubjectTaskForStudent(uint(subjectID), uint(studentID))
+	if err != nil {
+		http.Error(w, "Error getting tasks", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(tasks)
+	if err != nil {
+		http.Error(w, "Error encoding tasks", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}

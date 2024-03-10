@@ -22,3 +22,21 @@ func (r *StudentRepository) FindAll() ([]models.Student, error) {
 	err := r.db.Find(&students).Error
 	return students, err
 }
+
+func (r *StudentRepository) CreateStudentWork(work *models.StudentWork) error {
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		err := tx.
+			Create(work).
+			Error
+
+		if err != nil {
+			return err
+		}
+
+		for i := range work.Files {
+			work.Files[i].StudentWorkID = work.ID
+		}
+
+		return nil
+	})
+}
