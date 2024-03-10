@@ -128,3 +128,20 @@ func (h *CourseHandler) AddSubjectToModule(w http.ResponseWriter, r *http.Reques
 	}
 	w.WriteHeader(http.StatusCreated)
 }
+
+func (h *CourseHandler) GetCourseByID(w http.ResponseWriter, r *http.Request) {
+	courseIDString := r.PathValue("id")
+	courseID, _ := strconv.ParseUint(courseIDString, 10, 64)
+	course, err := h.controller.GetCourseByID(uint(courseID))
+	if err != nil {
+		http.Error(w, "Error getting course", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(course)
+	if err != nil {
+		http.Error(w, "Error encoding course", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}

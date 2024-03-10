@@ -43,6 +43,7 @@ func main() {
 	mux.HandleFunc("POST /courses/{id}/module", authorizationHandler.AuthMiddleware(courseHandler.AddModuleToCourse))
 	mux.HandleFunc("POST /courses/module/{id}/subject", authorizationHandler.AuthMiddleware(courseHandler.AddSubjectToModule))
 	mux.HandleFunc("GET /courses/teacher", authorizationHandler.AuthMiddleware(courseHandler.GetAllCoursesByTeacherID))
+	mux.HandleFunc("GET /courses/{id}", authorizationHandler.AuthMiddleware(courseHandler.GetCourseByID))
 
 	err = http.ListenAndServe(":8080", mux)
 	if err != nil {

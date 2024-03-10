@@ -58,3 +58,9 @@ func (r *CourseRepository) AddSubjectToModule(moduleID uint, subject *models.Sub
 		return nil
 	})
 }
+
+func (r *CourseRepository) FindCourseByID(courseID uint) (models.Course, error) {
+	var course models.Course
+	err := r.db.Preload("Modules.Subjects.Files").First(&course, courseID).Error
+	return course, err
+}

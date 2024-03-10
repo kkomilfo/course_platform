@@ -76,6 +76,78 @@ func (c *CourseController) AddSubjectToModule(moduleID uint, subject *SubjectReq
 	return c.repository.AddSubjectToModule(moduleID, &model)
 }
 
+func (c *CourseController) GetCourseByID(courseID uint) (CourseDetailsResponse, error) {
+	course, err := c.repository.FindCourseByID(courseID)
+	if err != nil {
+		return CourseDetailsResponse{}, err
+	}
+	return CourseDetailsResponseFromModel(course), nil
+}
+
+type CourseDetailsResponse struct {
+	ID          uint             `json:"id"`
+	Title       string           `json:"title"`
+	Description string           `json:"description"`
+	ImageURL    string           `json:"image_url"`
+	Modules     []ModuleResponse `json:"modules"`
+}
+
+type ModuleResponse struct {
+	ID       uint              `json:"id"`
+	Title    string            `json:"title"`
+	Subjects []SubjectResponse `json:"subjects"`
+}
+
+type SubjectResponse struct {
+	ID          uint                  `json:"id"`
+	Title       string                `json:"title"`
+	Description string                `json:"description"`
+	DueDate     string                `json:"due_date"`
+	Type        string                `json:"type"`
+	Files       []SubjectFileResponse `json:"files"`
+}
+
+type SubjectFileResponse struct {
+	URL  string `json:"url"`
+	Name string `json:"name"`
+}
+
+func CourseDetailsResponseFromModel(course models.Course) CourseDetailsResponse {
+	var modules []ModuleResponse
+	for _, module := range course.Modules {
+		var subjects []SubjectResponse
+		for _, subject := range module.Subjects {
+			var files []SubjectFileResponse
+			for _, file := range subject.Files {
+				files = append(files, SubjectFileResponse{
+					URL:  file.URL,
+					Name: file.Name,
+				})
+			}
+			subjects = append(subjects, SubjectResponse{
+				ID:          subject.ID,
+				Title:       subject.Title,
+				Description: subject.Description,
+				DueDate:     subject.DueDate.Format(time.RFC3339),
+				Type:        string(subject.Type),
+				Files:       files,
+			})
+		}
+		modules = append(modules, ModuleResponse{
+			ID:       module.ID,
+			Title:    module.Title,
+			Subjects: subjects,
+		})
+	}
+	return CourseDetailsResponse{
+		ID:          course.ID,
+		Title:       course.Title,
+		Description: course.Description,
+		ImageURL:    course.ImageURL,
+		Modules:     modules,
+	}
+}
+
 type CourseResponse struct {
 	ID          uint              `json:"id"`
 	Title       string            `json:"title"`
