@@ -84,6 +84,35 @@ func (c *CourseController) GetCourseByID(courseID uint) (CourseDetailsResponse, 
 	return CourseDetailsResponseFromModel(course), nil
 }
 
+func (c *CourseController) GetAllCoursesByStudentID(studentID uint) ([]StudentCourseResponse, error) {
+	courses, err := c.repository.FindAllByStudentID(studentID)
+
+	if err != nil {
+		return nil, err
+	}
+	var courseResponses []StudentCourseResponse
+	for _, course := range courses {
+		courseResponses = append(courseResponses, StudentCourseResponseFromModel(course))
+	}
+	return courseResponses, nil
+}
+
+type StudentCourseResponse struct {
+	ID          uint   `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	ImageURL    string `json:"image_url"`
+}
+
+func StudentCourseResponseFromModel(course models.Course) StudentCourseResponse {
+	return StudentCourseResponse{
+		ID:          course.ID,
+		Title:       course.Title,
+		Description: course.Description,
+		ImageURL:    course.ImageURL,
+	}
+}
+
 type CourseDetailsResponse struct {
 	ID          uint             `json:"id"`
 	Title       string           `json:"title"`

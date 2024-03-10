@@ -64,3 +64,12 @@ func (r *CourseRepository) FindCourseByID(courseID uint) (models.Course, error) 
 	err := r.db.Preload("Modules.Subjects.Files").First(&course, courseID).Error
 	return course, err
 }
+
+func (r *CourseRepository) FindAllByStudentID(id uint) ([]models.Course, error) {
+	var courses []models.Course
+	err := r.db.
+		Joins("JOIN course_enrollments ON course_enrollments.course_id = courses.id AND course_enrollments.student_id = ?", id).
+		Find(&courses).
+		Error
+	return courses, err
+}

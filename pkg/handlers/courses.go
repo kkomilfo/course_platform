@@ -145,3 +145,24 @@ func (h *CourseHandler) GetCourseByID(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 }
+
+func (h *CourseHandler) GetAllCoursesByStudentID(w http.ResponseWriter, r *http.Request) {
+	requestContext := r.Context().Value(RequestContextKey).(RequestContext)
+	if requestContext.Role != models.StudentRole {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	studentID := requestContext.UserID
+	courses, err := h.controller.GetAllCoursesByStudentID(studentID)
+	if err != nil {
+		http.Error(w, "Error getting courses", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(courses)
+	if err != nil {
+		http.Error(w, "Error encoding courses", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
