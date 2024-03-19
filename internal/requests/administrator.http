@@ -39,7 +39,7 @@ Content-Type: application/json
   "avatar_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
   "full_name": "Ivan Ivanenko",
   "description": "Ivan Ivanenko is a professional teacher with 10 years of experience in teaching computer science",
-  "date_of_birth": "{{$isoTimestamp}}",
+  "date_of_birth": "2024-03-11T08:11:59.264171014111917101411191710141119",
   "education": "Ivan Ivanenko has a master's degree in computer science from the University of California, Berkeley"
 }
 
@@ -53,7 +53,7 @@ Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {
-  "title": "Introduction to Computer Science",
+  "title": "iOS Development",
   "description": "This course is designed to help students with no prior experience in computer science to learn the basics of programming and computer science",
   "image_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
   "teacher_id": 1

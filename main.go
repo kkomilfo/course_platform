@@ -7,6 +7,7 @@ import (
 	"awesomeProject/pkg/repositories"
 	"fmt"
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 	"gorm.io/gorm"
 	"net/http"
 )
@@ -49,7 +50,8 @@ func main() {
 	mux.HandleFunc("GET /courses/{id}", authorizationHandler.AuthMiddleware(courseHandler.GetCourseByID))
 	mux.HandleFunc("GET /courses/subject/{subjectID}/student/{studentID}", authorizationHandler.AuthMiddleware(courseHandler.GetSubjectTaskForStudent))
 
-	err = http.ListenAndServe(":8080", mux)
+	corsHandler := cors.AllowAll().Handler(mux)
+	err = http.ListenAndServe(":8080", corsHandler)
 	if err != nil {
 		fmt.Println("Failed to start server")
 		panic(err)
