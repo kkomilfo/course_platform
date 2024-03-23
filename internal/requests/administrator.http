@@ -9,6 +9,11 @@ Content-Type: application/json
 
 > {%
     client.global.set("auth_token", response.body.token);
+
+    client.test("Admin login successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.token !== null, "Response does not contain token");
+    });
 %}
 
 ### Create a new student with admin token
@@ -23,10 +28,23 @@ Content-Type: application/json
   "full_name": "{{$random.alphanumeric(7)}} {{$random.alphanumeric(10)}}"
 }
 
+> {%
+    client.test("Admin create student successfully", function () {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+%}
 
 ### Get all students with admin token
 GET {{host}}/students
 Authorization: Bearer {{auth_token}}
+
+> {%
+    client.test("Get actual students successfully", function () {
+        client.assert(response.contentType.mimeType === "application/json", "Response content type is not application/json")
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.length > 0, "Response does not contain students");
+    });
+%}
 
 ### Create a new teacher with admin token
 POST {{host}}/teachers
@@ -39,13 +57,27 @@ Content-Type: application/json
   "avatar_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
   "full_name": "Ivan Ivanenko",
   "description": "Ivan Ivanenko is a professional teacher with 10 years of experience in teaching computer science",
-  "date_of_birth": "2024-03-11T08:11:59.264171014111917101411191710141119",
+  "date_of_birth": "{{$isoTimestamp}}",
   "education": "Ivan Ivanenko has a master's degree in computer science from the University of California, Berkeley"
 }
+
+> {%
+    client.test("Admin create teacher successfully", function () {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
 
 ### Get all teachers with admin token
 GET {{host}}/teachers
 Authorization: Bearer {{auth_token}}
+
+> {%
+    client.test("Get actual teachers successfully", function () {
+        client.assert(response.contentType.mimeType === "application/json", "Response content type is not application/json")
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.length > 0, "Response does not contain students");
+    });
+%}
 
 ### Create a new course with admin token
 POST {{host}}/courses
@@ -56,5 +88,11 @@ Content-Type: application/json
   "title": "iOS Development",
   "description": "This course is designed to help students with no prior experience in computer science to learn the basics of programming and computer science",
   "image_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
-  "teacher_id": 1
+  "teacher_id": 6
 }
+
+> {%
+    client.test("Admin create course successfully", function () {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+%}
