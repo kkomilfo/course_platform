@@ -3,8 +3,8 @@ POST {{host}}/teacher/login
 Content-Type: application/json
 
 {
-  "email": "P1e7xs6onfrX9G@EkiBmnu.de",
-  "password": ""
+  "email": "antonandrusenko@gmail.com",
+  "password": "pupkin1234"
 }
 
 > {%
@@ -70,7 +70,7 @@ Authorization: Bearer {{auth_token}}
 }
 
 ### Get details of course by id
-GET {{host}}/courses/1
+GET {{host}}/courses/5
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 

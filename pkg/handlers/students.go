@@ -38,7 +38,7 @@ func (h *StudentsHandler) CreateStudent(w http.ResponseWriter, r *http.Request) 
 
 func (h *StudentsHandler) GetAllStudents(w http.ResponseWriter, r *http.Request) {
 	requestContext := r.Context().Value(RequestContextKey).(RequestContext)
-	if requestContext.Role != models.AdministratorRole {
+	if requestContext.Role == models.StudentRole {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
