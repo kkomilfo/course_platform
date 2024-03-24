@@ -3,8 +3,8 @@ POST {{host}}/teacher/login
 Content-Type: application/json
 
 {
-  "email": "antonandrusenko@gmail.com",
-  "password": "pupkin1234"
+  "email": "jack_jonson@course_platform.com",
+  "password": "7BhydC!$L4HWPn#d"
 }
 
 > {%
@@ -70,12 +70,12 @@ Authorization: Bearer {{auth_token}}
 }
 
 ### Get details of course by id
-GET {{host}}/courses/5
+GET {{host}}/courses/1
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 ### Get student work
-GET {{host}}/courses/subject/5/student/1
+GET {{host}}/courses/subject/1/student/1
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
@@ -88,3 +88,8 @@ Authorization: Bearer {{auth_token}}
   "student_work_id": 10,
   "grade": 10
 }
+
+### Get all students by course id
+GET {{host}}/courses/1/students
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}

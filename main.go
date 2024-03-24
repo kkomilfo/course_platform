@@ -49,9 +49,11 @@ func main() {
 	mux.HandleFunc("GET /courses/student", authorizationHandler.AuthMiddleware(courseHandler.GetAllCoursesByStudentID))
 	mux.HandleFunc("GET /courses/{id}", authorizationHandler.AuthMiddleware(courseHandler.GetCourseByID))
 	mux.HandleFunc("GET /courses/subject/{subjectID}/student/{studentID}", authorizationHandler.AuthMiddleware(courseHandler.GetSubjectTaskForStudent))
+	mux.HandleFunc("GET /courses/{id}/students", authorizationHandler.AuthMiddleware(courseHandler.GetAllEntrolledStudentsByCourseID))
 
 	corsHandler := cors.AllowAll().Handler(mux)
 	err = http.ListenAndServe(":8080", corsHandler)
+	fmt.Println("Server is running on port 8080")
 	if err != nil {
 		fmt.Println("Failed to start server")
 		panic(err)

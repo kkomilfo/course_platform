@@ -93,3 +93,21 @@ func (r *CourseRepository) FindStudentWork(subjectID uint, studentID uint) (mode
 		Error
 	return work, err
 }
+
+func (r *CourseRepository) FindAllEntrolledStudentsByCourseID(id uint) ([]models.Student, error) {
+	var students []models.Student
+	err := r.db.
+		Joins("JOIN course_enrollments ON course_enrollments.student_id = students.id AND course_enrollments.course_id = ?", id).
+		Find(&students).
+		Error
+	return students, err
+}
+
+func (r *CourseRepository) GetStudentsWorksWithSubject(studentID uint, subjectIDs []uint) ([]models.StudentWork, error) {
+	var studentWorks []models.StudentWork
+	result := r.db.Where("student_id = ? AND subject_id IN ?", studentID, subjectIDs).Find(&studentWorks)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return studentWorks, nil
+}

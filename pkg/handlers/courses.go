@@ -187,3 +187,28 @@ func (h *CourseHandler) GetSubjectTaskForStudent(w http.ResponseWriter, r *http.
 	}
 	w.WriteHeader(http.StatusOK)
 }
+
+func (h *CourseHandler) GetAllEntrolledStudentsByCourseID(w http.ResponseWriter, r *http.Request) {
+	requestContext := r.Context().Value(RequestContextKey).(RequestContext)
+	if requestContext.Role != models.TeacherRole {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	courseIDString := r.PathValue("id")
+	courseID, _ := strconv.ParseUint(courseIDString, 10, 64)
+
+	students, err := h.controller.GetAllEntrolledStudentsByCourseID(uint(courseID))
+	if err != nil {
+		http.Error(w, "Error getting students", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(students)
+	if err != nil {
+		http.Error(w, "Error encoding students", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+
+}

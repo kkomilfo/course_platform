@@ -3,6 +3,7 @@ package controllers
 import (
 	"awesomeProject/pkg/models"
 	"awesomeProject/pkg/repositories"
+	"fmt"
 	"time"
 )
 
@@ -219,6 +220,78 @@ func (c *CourseController) GetSubjectTaskForStudent(subjectID uint, studentID ui
 		return SubjectTaskResponse{}, err
 	}
 	return SubjectTaskResponseFromModel(subject, work), nil
+}
+
+type EntrolledStudentResponse struct {
+	ID        uint   `json:"id"`
+	FullName  string `json:"full_name"`
+	AvatarURL string `json:"avatar_url"`
+	Works     []Work `json:"student_works"`
+}
+
+type Work struct {
+	SubjectID uint  `json:"subject_id"`
+	Grade     *uint `json:"grade"`
+}
+
+func (c *CourseController) GetAllEntrolledStudentsByCourseID(id uint) ([]EntrolledStudentResponse, error) {
+	course, err := c.repository.FindCourseByID(id)
+
+	var tasks []uint
+	for _, module := range course.Modules {
+		if module.Subjects == nil {
+			continue
+		}
+		for _, subject := range module.Subjects {
+			if subject.Type == "Task" {
+				tasks = append(tasks, subject.ID)
+			}
+		}
+	}
+
+	students, err := c.repository.FindAllEntrolledStudentsByCourseID(id)
+	if err != nil {
+		return nil, err
+	}
+	var studentResponses []EntrolledStudentResponse
+	for _, student := range students {
+		works, err := c.repository.GetStudentsWorksWithSubject(student.ID, tasks)
+
+		if err != nil {
+			return nil, err
+		}
+
+		// Create a map to track Works based on SubjectID
+		workMap := make(map[uint]Work)
+		for _, work := range works {
+			fmt.Println(work.SubjectID)
+			workMap[work.SubjectID] = Work{
+				SubjectID: work.SubjectID,
+				Grade:     work.Grade,
+			}
+		}
+
+		// Initialize empty Works array
+		result := make([]Work, 0, len(tasks)) // Pre-allocate space based on the number of tasks
+
+		// Create Work objects for all tasks, filling grades from workMap
+		for _, task := range tasks {
+			work, exists := workMap[task] // Adjust task.SubjectID based on your tasks data
+			work.SubjectID = task
+			if !exists {
+				work.Grade = nil // Set grade to nil if work doesn't exist
+			}
+			result = append(result, work)
+		}
+
+		studentResponses = append(studentResponses, EntrolledStudentResponse{
+			ID:        student.ID,
+			FullName:  student.FullName,
+			AvatarURL: student.AvatarURL,
+			Works:     result,
+		})
+	}
+	return studentResponses, nil
 }
 
 type SubjectTaskResponse struct {
