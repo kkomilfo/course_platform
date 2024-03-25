@@ -39,6 +39,6 @@ Content-Type: application/json
 }
 
 ### Get student work
-GET {{host}}/courses/subject/5/student/7
+GET {{host}}/courses/subject/2/student/1
 Content-Type: application/json
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTE0NzMyMjcsInJvbGUiOiJzdHVkZW50IiwidXNlcl9pZCI6MX0.lJkixXQ38LkaI5a7oH59CM2lqpp3ZrZQlNtPUxezLeA

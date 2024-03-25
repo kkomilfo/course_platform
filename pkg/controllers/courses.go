@@ -295,14 +295,15 @@ func (c *CourseController) GetAllEntrolledStudentsByCourseID(id uint) ([]Entroll
 }
 
 type SubjectTaskResponse struct {
-	ID           uint                         `json:"id"`
-	Title        string                       `json:"title"`
-	Description  string                       `json:"description"`
-	DueDate      string                       `json:"due_date"`
-	Comments     []SubjectTaskCommentResponse `json:"comments"`
-	TaskFiles    []SubjectFileResponse        `json:"task_files"`
-	StudentFiles []SubjectFileResponse        `json:"student_files"`
-	Grade        *uint                        `json:"grade"`
+	ID            uint                         `json:"id"`
+	StudentWorkID uint                         `json:"student_work_id"`
+	Title         string                       `json:"title"`
+	Description   string                       `json:"description"`
+	DueDate       string                       `json:"due_date"`
+	Comments      []SubjectTaskCommentResponse `json:"comments"`
+	TaskFiles     []SubjectFileResponse        `json:"task_files"`
+	StudentFiles  []SubjectFileResponse        `json:"student_files"`
+	Grade         *uint                        `json:"grade"`
 }
 
 type SubjectTaskCommentResponse struct {
@@ -335,12 +336,13 @@ func SubjectTaskResponseFromModel(subject models.Subject, work models.StudentWor
 		})
 	}
 	return SubjectTaskResponse{
-		ID:           subject.ID,
-		Title:        subject.Title,
-		Description:  subject.Description,
-		DueDate:      subject.DueDate.Format(time.RFC3339),
-		Comments:     comments,
-		TaskFiles:    files,
-		StudentFiles: studentFiles,
+		ID:            subject.ID,
+		StudentWorkID: work.ID,
+		Title:         subject.Title,
+		Description:   subject.Description,
+		DueDate:       subject.DueDate.Format(time.RFC3339),
+		Comments:      comments,
+		TaskFiles:     files,
+		StudentFiles:  studentFiles,
 	}
 }
