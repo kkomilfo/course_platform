@@ -344,5 +344,6 @@ func SubjectTaskResponseFromModel(subject models.Subject, work models.StudentWor
 		Comments:      comments,
 		TaskFiles:     files,
 		StudentFiles:  studentFiles,
+		Grade:         work.Grade,
 	}
 }
