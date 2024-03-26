@@ -105,7 +105,7 @@ func (r *CourseRepository) FindAllEntrolledStudentsByCourseID(id uint) ([]models
 
 func (r *CourseRepository) GetStudentsWorksWithSubject(studentID uint, subjectIDs []uint) ([]models.StudentWork, error) {
 	var studentWorks []models.StudentWork
-	result := r.db.Where("student_id = ? AND subject_id IN ?", studentID, subjectIDs).Find(&studentWorks)
+	result := r.db.Preload("Files").Where("student_id = ? AND subject_id IN ?", studentID, subjectIDs).Find(&studentWorks)
 	if result.Error != nil {
 		return nil, result.Error
 	}

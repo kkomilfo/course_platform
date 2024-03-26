@@ -230,21 +230,23 @@ type EntrolledStudentResponse struct {
 }
 
 type Work struct {
-	SubjectID uint  `json:"subject_id"`
-	Grade     *uint `json:"grade"`
+	SubjectID   uint   `json:"subject_id"`
+	Grade       *uint  `json:"grade"`
+	SubjectName string `json:"subject_name"`
+	IsSend      bool   `json:"in_send"`
 }
 
 func (c *CourseController) GetAllEntrolledStudentsByCourseID(id uint) ([]EntrolledStudentResponse, error) {
 	course, err := c.repository.FindCourseByID(id)
 
-	var tasks []uint
+	var tasks []models.Subject
 	for _, module := range course.Modules {
 		if module.Subjects == nil {
 			continue
 		}
 		for _, subject := range module.Subjects {
 			if subject.Type == "Task" {
-				tasks = append(tasks, subject.ID)
+				tasks = append(tasks, subject)
 			}
 		}
 	}
@@ -253,9 +255,15 @@ func (c *CourseController) GetAllEntrolledStudentsByCourseID(id uint) ([]Entroll
 	if err != nil {
 		return nil, err
 	}
+
+	tasksIDs := make([]uint, 0, len(tasks))
+	for _, task := range tasks {
+		tasksIDs = append(tasksIDs, task.ID)
+	}
+
 	var studentResponses []EntrolledStudentResponse
 	for _, student := range students {
-		works, err := c.repository.GetStudentsWorksWithSubject(student.ID, tasks)
+		works, err := c.repository.GetStudentsWorksWithSubject(student.ID, tasksIDs)
 
 		if err != nil {
 			return nil, err
@@ -264,10 +272,12 @@ func (c *CourseController) GetAllEntrolledStudentsByCourseID(id uint) ([]Entroll
 		// Create a map to track Works based on SubjectID
 		workMap := make(map[uint]Work)
 		for _, work := range works {
-			fmt.Println(work.SubjectID)
+			fmt.Println(work.ID, work.Files)
 			workMap[work.SubjectID] = Work{
-				SubjectID: work.SubjectID,
-				Grade:     work.Grade,
+				SubjectID:   work.SubjectID,
+				Grade:       work.Grade,
+				SubjectName: "",
+				IsSend:      len(work.Files) >= 0,
 			}
 		}
 
@@ -276,8 +286,9 @@ func (c *CourseController) GetAllEntrolledStudentsByCourseID(id uint) ([]Entroll
 
 		// Create Work objects for all tasks, filling grades from workMap
 		for _, task := range tasks {
-			work, exists := workMap[task] // Adjust task.SubjectID based on your tasks data
-			work.SubjectID = task
+			work, exists := workMap[task.ID] // Adjust task.SubjectID based on your tasks data
+			work.SubjectID = task.ID
+			work.SubjectName = task.Title
 			if !exists {
 				work.Grade = nil // Set grade to nil if work doesn't exist
 			}
