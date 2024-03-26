@@ -3,8 +3,8 @@ POST {{host}}/student/login
 Content-Type: application/json
 
 {
-  "email": "2uYjG4I@kcpOQG.de@course_platform.com",
-  "password": "YQiHB8C"
+  "email": "will_smith_kn21@course_platform.com",
+  "password": "rbJ0c0Ct2FSzAM1#"
 }
 
 > {%
@@ -42,3 +42,12 @@ Content-Type: application/json
 GET {{host}}/courses/subject/2/student/1
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTE0NzMyMjcsInJvbGUiOiJzdHVkZW50IiwidXNlcl9pZCI6MX0.lJkixXQ38LkaI5a7oH59CM2lqpp3ZrZQlNtPUxezLeA
+
+### comments work
+POST {{host}}/comment/work/3
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "content": "Good job"
+}

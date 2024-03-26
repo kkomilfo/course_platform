@@ -17,6 +17,10 @@ type StudentWorkRequest struct {
 	} `json:"files"`
 }
 
+type CommentRequest struct {
+	Content string `json:"content"`
+}
+
 func NewStudentController(studentRepository *repositories.StudentRepository) *StudentController {
 	return &StudentController{studentRepository}
 }
@@ -44,4 +48,20 @@ func (c *StudentController) CreateStudentWork(studentID uint, request StudentWor
 		Files:     studentWorkFiles,
 	}
 	return c.studentRepository.CreateStudentWork(&work)
+}
+
+func (c *StudentController) Comment(workID uint, userID uint, role models.Role, comment CommentRequest) error {
+	var stringRole string
+	if role == models.StudentRole {
+		stringRole = "student"
+	} else {
+		stringRole = "teacher"
+	}
+	var comment1 = models.Comment{
+		UserID:        userID,
+		UserType:      stringRole,
+		StudentWorkID: workID,
+		Content:       comment.Content,
+	}
+	return c.studentRepository.Comment(&comment1)
 }

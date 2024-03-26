@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 type StudentsHandler struct {
@@ -77,4 +78,22 @@ func (h *StudentsHandler) CreateStudentWork(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
+}
+
+func (h *StudentsHandler) Comment(writer http.ResponseWriter, request *http.Request) {
+	requestContext := request.Context().Value(RequestContextKey).(RequestContext)
+	var comment controllers.CommentRequest
+	err := json.NewDecoder(request.Body).Decode(&comment)
+	if err != nil {
+		http.Error(writer, "Error decoding comment request", http.StatusBadRequest)
+		return
+	}
+	courseIDString := request.PathValue("id")
+	workID, _ := strconv.ParseUint(courseIDString, 10, 64)
+	err = h.studentController.Comment(uint(workID), requestContext.UserID, requestContext.Role, comment)
+	if err != nil {
+		http.Error(writer, "Error commenting", http.StatusInternalServerError)
+		return
+	}
+	writer.WriteHeader(http.StatusCreated)
 }

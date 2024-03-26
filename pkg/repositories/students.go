@@ -40,3 +40,7 @@ func (r *StudentRepository) CreateStudentWork(work *models.StudentWork) error {
 		return nil
 	})
 }
+
+func (r *StudentRepository) Comment(comment *models.Comment) error {
+	return r.db.Create(comment).Error
+}
